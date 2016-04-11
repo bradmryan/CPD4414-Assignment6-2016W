@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+        <script>
+            var jsonData = {
+                "content" : "content"
+            };
+            $.ajax({
+                url: "r/messages", 
+                method: "get",
+                dataType: "json",
+                success: function( data ) {
+                    var items = [];
+                    $.each( data, function( key, val ) {
+                        items.push( "<li id='" +key+ "'>" +val+ "</li>" );
+                    });
+
+                    $( "<ul/>", {
+                          "class": "my-new-list",
+                          html: items.join( "" )
+                    }).appendTo( "body" );
+                }
+            });
+            $.ajax({
+                url: "r/messages", 
+                method: "post",
+                contentType: "application/json; charset=UTF-8",
+                data: JSON.stringify(jsonData)
+                
+            });
+        </script> 
+    </head>
+    <body>
+        <div>
+            <form method="POST">
+                <input id="content" name="content" />
+                <button type="submit">Add</button>
+            </form>
+        </div>        
+               
+    </body>
+</html>
