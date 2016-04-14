@@ -24,11 +24,18 @@ public class Messages {
     }
     
     public Message getMessageById(int id){
-        return messages.get(id);
+        for(Message message : messages){
+            if (message.getId() == id) return message;
+        }
+        return null;
     }
     
-    public List<Message> getMessageByDate(Date from, Date to){
-        return messages;
+    public List<Message> getMessagesByDate(Date from, Date to){
+        List<Message> messagesByDate = new ArrayList();
+        for(Message message : messages){
+            if (message.getSentTime().after(from) && message.getSentTime().before(from)) messagesByDate.add(message);
+        }
+        return messagesByDate;
     }
     
     public void add(Message content){
