@@ -6,6 +6,7 @@
 package services;
 
 import java.io.StringReader;
+import java.sql.Date;
 import javax.enterprise.context.ApplicationScoped;
 import javax.json.Json;
 import javax.json.JsonArray;
@@ -15,12 +16,16 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Produces;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 
 import javax.ws.rs.core.MediaType;
+import model.Message;
 
 
 /**
@@ -38,22 +43,66 @@ public class MessagesService {
     public JsonArray getAll() {
         System.out.println("GET METHOD");
         JsonArrayBuilder json = Json.createArrayBuilder();
-        for (String message : messages.getMessages()) {
+        for (Message message : messages.getMessages()) {
             System.out.println(message);
-            json.add(message);
+            json.add(message.toJSON());
         }
         return json.build();
     }
+    
+    @GET
+    @Path("{id}")
+    @PathParam("id")
+    @Produces(MediaType.APPLICATION_JSON)
+    public JsonObject getById(){
+        return messages.getMessageById(id);
+    }
+    
+    @GET
+    @Path("{from}/{to}")
+    @PathParam("from")
+    @PathParam("to")
+    @Produces(MediaType.APPLICATION_JSON)
+    public JsonArray getByDate(){
+        JsonArrayBuilder json = Json.createArrayBuilder();
+        for (Message message : messages.getMessages()) {
+            if (message.getSentTime() > from && message.getSentTime() < to) {
+                json.add(message.toJSON());
+            }
+        }
+        return json.build();
+    }
+    
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public void add(String str) {
-        System.out.println("POST METHOD");
-        System.out.println(str);
-        //JsonObject json = Json.createReader(new StringReader(str)).readObject();
-        // Expects { "item": "some todoList entry" }      
-        messages.add(str);
         
+        JsonObject json = Json.createReader(new StringReader(str)).readObject();
+        Message message = new Message(
+                json.getInt("id"),
+                json.getString("title"),
+                json.getString("content"),
+                json.getString("author"),
+                Date.valueOf(json.getString("sentTime"))
+        );
+
+        messages.add(message);
+        
+    }
+    
+    @PUT
+    @Path("{id}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public void edit(){
+        messages.edit(id, message);
+    }
+    
+    @DELETE
+    @Path("{id}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public void destroy(){
+        messages.destroy(id);
     }
 }

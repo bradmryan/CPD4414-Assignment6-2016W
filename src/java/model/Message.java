@@ -8,6 +8,7 @@ package model;
 import java.io.StringWriter;
 import java.util.Date;
 import javax.json.Json;
+import javax.json.JsonObject;
 import javax.json.stream.JsonGenerator;
 import javax.json.stream.JsonGeneratorFactory;
 
@@ -31,8 +32,6 @@ public class Message {
         this.author = author;
         this.sentTime = new Date();
     }
-
-    
     
     public Message(int id, String title, String content, String author, Date sentTime) {
         this.id = id;
@@ -82,19 +81,19 @@ public class Message {
         this.sentTime = sentTime;
     }
     
-    @Override
-    public String toString(){
+    public JsonObject toJSON(){
         StringWriter out = new StringWriter();
         JsonGeneratorFactory factory = Json.createGeneratorFactory(null);
         JsonGenerator gen = factory.createGenerator(out);
         gen.writeStartObject()
+                .write("id", id)
                 .write("title", title)
                 .write("content", content)
                 .write("author", author)
                 .write("senttime", sentTime.toString())
               .writeEnd();
         gen.close();
-        return out.toString();
+        return (JsonObject) out;
     }
     
 }

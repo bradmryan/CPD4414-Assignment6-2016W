@@ -5,8 +5,10 @@
  */
 package services;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
+import model.Message;
 
 
 /**
@@ -15,16 +17,30 @@ import javax.enterprise.context.ApplicationScoped;
  */
 @ApplicationScoped
 public class Messages {
-    private List<String> messages = new ArrayList<>();
+    private List<Message> messages;
 
-    public List<String> getMessages() {
+    public List<Message> getMessages() {
         return messages;
     }
     
-    public void add(String content){
-        messages.add(content);
-        
+    public Message getMessageById(int id){
+        return messages.get(id);
     }
     
+    public List<Message> getMessageByDate(Date from, Date to){
+        return messages;
+    }
+    
+    public void add(Message content){
+        messages.add(content);
+    }
+    
+    public void edit(int id, Message message){
+        messages.get(id).setContent(message.toString());
+    }
+    
+    public void destroy(int id){
+        messages.set(id, null);
+    }
     
 }

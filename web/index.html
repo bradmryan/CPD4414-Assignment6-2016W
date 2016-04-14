@@ -11,6 +11,7 @@ and open the template in the editor.
             var jsonData = {
                 "content" : "content"
             };
+
             $.ajax({
                 url: "r/messages", 
                 method: "get",
@@ -31,15 +32,14 @@ and open the template in the editor.
                 url: "r/messages", 
                 method: "post",
                 contentType: "application/json; charset=UTF-8",
-                data: JSON.stringify(jsonData)
-                
+                data: $('#formSubmit').serializeArray()
             });
         </script> 
     </head>
     <body>
         <div>
-            <form method="POST">
-                <input id="content" name="content" />
+            <form method="POST" id="formSubmit">
+                <input type="text" id="content" name="content" />
                 <button type="submit">Add</button>
             </form>
         </div>        
