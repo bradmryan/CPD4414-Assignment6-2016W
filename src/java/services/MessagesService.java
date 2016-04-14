@@ -75,7 +75,7 @@ public class MessagesService {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public void add(String str) {
+    public JsonObject add(String str) {
         
         JsonObject json = Json.createReader(new StringReader(str)).readObject();
         Message message = new Message(
@@ -87,13 +87,14 @@ public class MessagesService {
         );
 
         messages.add(message);
-        
+        return json;
     }
     
     @PUT
     @Path("{id}")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response edit(@PathParam("id") int id, String str){
+    @Produces(MediaType.APPLICATION_JSON)
+    public JsonObject edit(@PathParam("id") int id, String str){
         JsonObject json = Json.createReader(new StringReader(str)).readObject();
         Message message = new Message(
                 json.getInt("id"),
@@ -103,7 +104,7 @@ public class MessagesService {
                 Date.valueOf(json.getString("sentTime"))
         );
         messages.edit(id, message);
-        return Response.status(200).build();
+        return json;
     }
     
     @DELETE
