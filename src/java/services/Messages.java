@@ -36,7 +36,7 @@ public class Messages {
     }
     
     public void edit(int id, Message message){
-        messages.get(id).setContent(message.toString());
+        messages.set(id, message);
     }
     
     public void destroy(int id){

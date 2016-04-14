@@ -12,8 +12,6 @@ import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Produces;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -25,6 +23,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import model.Message;
 
 
@@ -54,19 +53,18 @@ public class MessagesService {
     @Path("{id}")
     @PathParam("id")
     @Produces(MediaType.APPLICATION_JSON)
-    public JsonObject getById(){
-        return messages.getMessageById(id);
+    public JsonObject getById(@PathParam("id") int id){
+        return messages.getMessageById(id).toJSON();
     }
     
     @GET
     @Path("{from}/{to}")
-    @PathParam("from")
-    @PathParam("to")
+
     @Produces(MediaType.APPLICATION_JSON)
-    public JsonArray getByDate(){
+    public JsonArray getByDate(@PathParam("from") Date from, @PathParam("to") Date to){
         JsonArrayBuilder json = Json.createArrayBuilder();
         for (Message message : messages.getMessages()) {
-            if (message.getSentTime() > from && message.getSentTime() < to) {
+            if (message.getSentTime().after(from) && message.getSentTime().before(to)) {
                 json.add(message.toJSON());
             }
         }
@@ -95,14 +93,24 @@ public class MessagesService {
     @PUT
     @Path("{id}")
     @Consumes(MediaType.APPLICATION_JSON)
-    public void edit(){
+    public Response edit(@PathParam("id") int id, String str){
+        JsonObject json = Json.createReader(new StringReader(str)).readObject();
+        Message message = new Message(
+                json.getInt("id"),
+                json.getString("title"),
+                json.getString("content"),
+                json.getString("author"),
+                Date.valueOf(json.getString("sentTime"))
+        );
         messages.edit(id, message);
+        return Response.status(200).build();
     }
     
     @DELETE
     @Path("{id}")
     @Consumes(MediaType.APPLICATION_JSON)
-    public void destroy(){
+    public Response destroy(@PathParam("id") int id){
         messages.destroy(id);
+        return Response.status(200).build();
     }
 }
